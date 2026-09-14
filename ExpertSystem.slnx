@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ExpertSystem.Core/ExpertSystem.Core.csproj" />
+  <Project Path="ExpertSystem.Tests/ExpertSystem.Tests.csproj" />
+</Solution>
