@@ -22,6 +22,18 @@ public static class Parser
         string serialized = JsonConvert.SerializeObject(ruleSets);
         WriteToFile(serialized);
     }
+
+    public static List<RuleSet> LoadRuleSets(string path)
+    {
+        string serialized = ReadFromFile(path);
+        List<RuleSet>? ruleSets =
+            JsonConvert.DeserializeObject<List<RuleSet>>(serialized);
+
+        if (ruleSets is null)
+            throw new NullReferenceException("Не удалось загрузить набор правил");
+
+        return ruleSets;
+    }
     #endregion
 
     #region Filesystem
@@ -31,5 +43,8 @@ public static class Parser
                 Environment.CurrentDirectory,
                  "rulesets.rs"),
             content);
+
+    private static string ReadFromFile(string path)
+        => File.ReadAllText(path);
     #endregion
 }

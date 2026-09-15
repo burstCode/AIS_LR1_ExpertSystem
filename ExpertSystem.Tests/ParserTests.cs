@@ -11,7 +11,70 @@ public class ParserTests
     public void SaveRuleSetsTest()
     {
         // Arrange
-        List<RuleSet> ruleSets = new()
+        List<RuleSet> ruleSets = BuildTestRuleSets();
+
+        // Act
+        Parser.SaveRuleSets(ruleSets);
+
+        // Assert
+        Assert.True(RuleSetsFileExists());
+
+        try
+        {
+            string serialized = File.ReadAllText(GetRuleSetsFilePath());
+            List<RuleSet>? deserialized = JsonConvert.DeserializeObject<List<RuleSet>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(ruleSets.Count, deserialized.Count);
+        }
+        finally
+        {
+            File.Delete(GetRuleSetsFilePath());
+        }
+        Assert.False(RuleSetsFileExists());
+    }
+
+    [Fact]
+    public void LoadRuleSetsTest()
+    {
+        // Arrange
+        List<RuleSet> ruleSets = BuildTestRuleSets();
+
+        try
+        {
+            // Act
+            Parser.SaveRuleSets(ruleSets);
+
+            Assert.True(RuleSetsFileExists());
+
+            List<RuleSet> loadedRuleSets =
+                Parser.LoadRuleSets(GetRuleSetsFilePath());
+
+            // Assert
+            Assert.NotEmpty(loadedRuleSets);
+            Assert.Equal(ruleSets.Count, loadedRuleSets.Count);
+        }
+        finally
+        {
+            File.Delete(GetRuleSetsFilePath());
+        }
+    }
+    #endregion
+
+    #region Filesystem helpers
+
+    private bool RuleSetsFileExists() =>
+        File.Exists(GetRuleSetsFilePath());
+
+    private string GetRuleSetsFilePath() =>
+        Path.Combine(
+            Environment.CurrentDirectory,
+            "rulesets.rs");
+
+    #endregion
+
+    #region Content helpers
+    private List<RuleSet> BuildTestRuleSets() =>
+        new()
         {
             new()
             {
@@ -56,37 +119,5 @@ public class ParserTests
                 }
             }
         };
-
-        // Act
-        Parser.SaveRuleSets(ruleSets);
-
-        // Assert
-        Assert.True(RuleSetsFileExists());
-
-        try
-        {
-            string serialized = File.ReadAllText(GetRuleSetsFilePath());
-            List<RuleSet>? deserialized = JsonConvert.DeserializeObject<List<RuleSet>>(serialized);
-            Assert.NotNull(deserialized);
-            Assert.Equal(ruleSets.Count, deserialized.Count);
-        }
-        finally
-        {
-            File.Delete(GetRuleSetsFilePath());
-        }
-        Assert.False(RuleSetsFileExists());
-    }
-    #endregion
-
-    #region Filesystem helpers
-
-    private bool RuleSetsFileExists() =>
-        File.Exists(GetRuleSetsFilePath());
-
-    private string GetRuleSetsFilePath() =>
-        Path.Combine(
-            Environment.CurrentDirectory,
-            "rulesets.rs");
-
     #endregion
 }
