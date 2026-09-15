@@ -17,12 +17,22 @@ namespace ExpertSystem.Core;
 public static class Parser
 {
     #region Serialization
+    /// <summary>
+    /// Сохранение списка правил в файл rulesets.rs.
+    /// </summary>
+    /// <param name="ruleSets">Список правил.</param>
     public static void SaveRuleSets(List<RuleSet> ruleSets)
     {
         string serialized = JsonConvert.SerializeObject(ruleSets);
         WriteToFile(serialized);
     }
 
+    /// <summary>
+    /// Загрузить список правил из файла.
+    /// </summary>
+    /// <param name="path">Путь к файлу.</param>
+    /// <returns>Десериализованный список правил.</returns>
+    /// <exception cref="NullReferenceException"></exception>
     public static List<RuleSet> LoadRuleSets(string path)
     {
         string serialized = ReadFromFile(path);
