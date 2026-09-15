@@ -25,8 +25,8 @@ public class Match
 
     public static bool operator ==(Match a, Match b)
     {
-        if (a.Object == b.Object &&
-            a.Value == b.Value)
+        if (a.Object.Trim().ToLower() == b.Object.Trim().ToLower() &&
+            a.Value.Trim().ToLower() == b.Value.Trim().ToLower())
             return true;
 
         return false;

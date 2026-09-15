@@ -1,5 +1,6 @@
 ﻿using ExpertSystem.Core;
 using ExpertSystem.Core.Models;
+using ExpertSystem.Tests.Helpers;
 
 namespace ExpertSystem.Tests;
 
@@ -229,6 +230,23 @@ public class ExpertRulesTest
         bool isMatch = Expert.IsStateMatchesRuleSet(states, ruleSet);
 
         Assert.False(isMatch);
+    }
+
+    #endregion
+
+    #region Think
+
+    [Fact]
+    public void ExpertThinkTest()
+    {
+        List<RuleSet> ruleSets = TestContentHelper.BuildTestRuleSets();
+        List<Match> startState = TestContentHelper.BuildStartState();
+
+        Match? finalState = Expert.Think(ruleSets, startState);
+
+        Assert.NotNull(finalState);
+        Assert.Equal("Блок питания", finalState.Object);
+        Assert.Equal("500w", finalState.Value);
     }
 
     #endregion

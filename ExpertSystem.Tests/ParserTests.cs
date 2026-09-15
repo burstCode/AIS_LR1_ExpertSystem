@@ -1,5 +1,6 @@
 using ExpertSystem.Core;
 using ExpertSystem.Core.Models;
+using ExpertSystem.Tests.Helpers;
 using Newtonsoft.Json;
 
 namespace ExpertSystem.Tests;
@@ -11,7 +12,7 @@ public class ParserTests
     public void SaveRuleSetsTest()
     {
         // Arrange
-        List<RuleSet> ruleSets = BuildTestRuleSets();
+        List<RuleSet> ruleSets = TestContentHelper.BuildTestRuleSets();
 
         // Act
         Parser.SaveRuleSets(ruleSets);
@@ -37,7 +38,7 @@ public class ParserTests
     public void LoadRuleSetsTest()
     {
         // Arrange
-        List<RuleSet> ruleSets = BuildTestRuleSets();
+        List<RuleSet> ruleSets = TestContentHelper.BuildTestRuleSets();
 
         try
         {
@@ -70,54 +71,5 @@ public class ParserTests
             Environment.CurrentDirectory,
             "rulesets.rs");
 
-    #endregion
-
-    #region Content helpers
-    private List<RuleSet> BuildTestRuleSets() =>
-        new()
-        {
-            new()
-            {
-                Conditions = new()
-                {
-                    new()
-                    {
-                        Object = "Тип",
-                        Value = "Офисный"
-                    },
-                    new()
-                    {
-                        Object = "Игра",
-                        Value = "osu!"
-                    }
-                },
-                Consequence = new()
-                {
-                    Object = "Процессор",
-                    Value = "Intel Core i3"
-                }
-            },
-            new()
-            {
-                Conditions = new()
-                {
-                    new()
-                    {
-                        Object = "Тип",
-                        Value = "Игровой"
-                    },
-                    new()
-                    {
-                        Object = "Игра",
-                        Value = "F1"
-                    }
-                },
-                Consequence = new()
-                {
-                    Object = "Процессор",
-                    Value = "Intel Core i7"
-                }
-            }
-        };
     #endregion
 }

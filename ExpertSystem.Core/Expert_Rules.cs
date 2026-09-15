@@ -35,15 +35,5 @@ public static partial class Expert
     /// <param name="ruleSet">Набор правил.</param>
     /// <returns>Истина/Ложь в зависимости от соответствия.</returns>
     public static bool IsStateMatchesRuleSet(List<Match> states, RuleSet ruleSet)
-    {
-        foreach (Match state in states)
-        {
-            if (!IsStateMatchesRuleSet(state, ruleSet))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+        => ruleSet.Conditions.All(states.Contains);
 }
