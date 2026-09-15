@@ -1,4 +1,7 @@
-﻿namespace ExpertSystem.Core;
+﻿using Newtonsoft.Json;
+using ExpertSystem.Core.Models;
+
+namespace ExpertSystem.Core;
 
 /// <summary>
 /// Класс определяет методы для обработки:
@@ -13,4 +16,20 @@
 /// </summary>
 public static class Parser
 {
+    #region Serialization
+    public static void SaveRuleSets(List<RuleSet> ruleSets)
+    {
+        string serialized = JsonConvert.SerializeObject(ruleSets);
+        WriteToFile(serialized);
+    }
+    #endregion
+
+    #region Filesystem
+    private static void WriteToFile(string content)
+        => File.WriteAllText(
+            Path.Combine(
+                Environment.CurrentDirectory,
+                 "rulesets.rs"),
+            content);
+    #endregion
 }
