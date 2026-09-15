@@ -8,7 +8,7 @@ public class ExpertRulesTest
     #region Rule
 
     [Fact]
-    public void IsStateMathesRule_Matches()
+    public void IsStateMatchesRule_Matches()
     {
         Match state = new()
         {
@@ -30,13 +30,13 @@ public class ExpertRulesTest
             }
         };
 
-        bool isMathes = Expert.IsStateMathesRule(state, rule);
+        bool isMatches = Expert.IsStateMatchesRule(state, rule);
 
-        Assert.True(isMathes);
+        Assert.True(isMatches);
     }
 
     [Fact]
-    public void IsStateMathesRule_NotMatches()
+    public void IsStateMatchesRule_NotMatches()
     {
         Match state = new()
         {
@@ -58,9 +58,9 @@ public class ExpertRulesTest
             }
         };
 
-        bool isMathes = Expert.IsStateMathesRule(state, rule);
+        bool isMatches = Expert.IsStateMatchesRule(state, rule);
 
-        Assert.False(isMathes);
+        Assert.False(isMatches);
     }
 
     #endregion
@@ -68,7 +68,7 @@ public class ExpertRulesTest
     #region RuleSet
 
     [Fact]
-    public void IsStateMathesRuleSet_Mathes()
+    public void IsStateMatchesRuleSet_Matches()
     {
         Match state = new()
         {
@@ -98,13 +98,13 @@ public class ExpertRulesTest
             }
         };
 
-        bool isMatch = Expert.IsStateMathesRuleSet(state, ruleSet);
+        bool isMatch = Expert.IsStateMatchesRuleSet(state, ruleSet);
 
         Assert.True(isMatch);
     }
 
     [Fact]
-    public void IsStateMathesRuleSet_NotMathes()
+    public void IsStateMatchesRuleSet_NotMatches()
     {
         Match state = new()
         {
@@ -134,7 +134,7 @@ public class ExpertRulesTest
             }
         };
 
-        bool isMatch = Expert.IsStateMathesRuleSet(state, ruleSet);
+        bool isMatch = Expert.IsStateMatchesRuleSet(state, ruleSet);
 
         Assert.False(isMatch);
     }
@@ -144,7 +144,7 @@ public class ExpertRulesTest
     #region RuleSets
 
     [Fact]
-    public void IsStatesMathesRuleSet_Mathes()
+    public void IsStatesMatchesRuleSet_Matches()
     {
         List<Match> states = new()
         {
@@ -182,13 +182,13 @@ public class ExpertRulesTest
             }
         };
 
-        bool isMatch = Expert.IsStateMathesRuleSet(states, ruleSet);
+        bool isMatch = Expert.IsStateMatchesRuleSet(states, ruleSet);
 
         Assert.True(isMatch);
     }
 
     [Fact]
-    public void IsStatesMathesRuleSet_NotMathes()
+    public void IsStatesMatchesRuleSet_NotMatches()
     {
         List<Match> states = new()
         {
@@ -226,7 +226,7 @@ public class ExpertRulesTest
             }
         };
 
-        bool isMatch = Expert.IsStateMathesRuleSet(states, ruleSet);
+        bool isMatch = Expert.IsStateMatchesRuleSet(states, ruleSet);
 
         Assert.False(isMatch);
     }

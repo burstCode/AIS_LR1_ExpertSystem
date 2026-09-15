@@ -14,7 +14,7 @@ public static partial class Expert
     /// <param name="state">Текущее состояние.</param>
     /// <param name="rule">Правило.</param>
     /// <returns>Истина/Ложь в зависимости от соответствия.</returns>
-    public static bool IsStateMathesRule(Match state, Rule rule)
+    public static bool IsStateMatchesRule(Match state, Rule rule)
         => state == rule.Condition;
 
     /// <summary>
@@ -24,7 +24,7 @@ public static partial class Expert
     /// <param name="state">Текущее состояние.</param>
     /// <param name="ruleSet">Набор правил.</param>
     /// <returns>Истина/Ложь в зависимости от соответствия.</returns>
-    public static bool IsStateMathesRuleSet(Match state, RuleSet ruleSet)
+    public static bool IsStateMatchesRuleSet(Match state, RuleSet ruleSet)
         => ruleSet.Conditions.Contains(state);
 
     /// <summary>
@@ -34,11 +34,11 @@ public static partial class Expert
     /// <param name="states">Текущее состояние.</param>
     /// <param name="ruleSet">Набор правил.</param>
     /// <returns>Истина/Ложь в зависимости от соответствия.</returns>
-    public static bool IsStateMathesRuleSet(List<Match> states, RuleSet ruleSet)
+    public static bool IsStateMatchesRuleSet(List<Match> states, RuleSet ruleSet)
     {
         foreach (Match state in states)
         {
-            if (!IsStateMathesRuleSet(state, ruleSet))
+            if (!IsStateMatchesRuleSet(state, ruleSet))
             {
                 return false;
             }
