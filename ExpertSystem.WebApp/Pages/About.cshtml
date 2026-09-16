@@ -1,0 +1,88 @@
+@page
+@model AboutModel
+@{
+    ViewData[index: "Title"] = "ЭС: О программе";
+}
+
+<div class="text-center">
+    <h1>О программе</h1>
+</div>
+<hr />
+<div class="text-left">
+    <p>
+        Приложение реализует экспертную системы с
+        использованием <mark>прямой цепочки рассуждений</mark>.
+    </p>
+    <p>
+        Предметной областью является <mark>подбор комплектующих для ПК</mark>,
+        с чем и помогает экспертная система.
+    </p>
+    <p>
+        Ниже представлен ключевой метод системы, реализующий рассуждение в
+        соответствии с загруженным сводом правил.
+    </p>
+</div>
+<div class="container">
+    @{
+    string code = @"
+/// <summary>
+/// Класс определяет методы логической обработки правил,
+/// реализующие прямую цепочку рассуждений.
+/// </summary>
+public static partial class Expert
+{
+    public static Match? Think(List<RuleSet> ruleSets, List<Match> startState)
+    {
+        List<Match> states = [.. startState];
+        foreach (RuleSet ruleSet in ruleSets)
+        {
+            bool isMathing = IsStateMatchesRuleSet(states, ruleSet);
+            if (isMathing)
+                states.Add(ruleSet.Consequence);
+        }
+        if (startState.Count == states.Count)
+            return null;
+        return states.Last();
+    }
+}";
+}
+    <pre class="prettyprint code-gray">
+        <code>@Html.Raw(@Html.Encode(code))</code>
+    </pre>
+</div>
+<div>
+    <table class="table table-hover">
+        <caption align="top">
+            Разработали:
+        </caption>
+        <thead>
+            <th>#</th>
+            <th>Студент</th>
+            <th>Имя пользователя на GitHub</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    1
+                </td>
+                <td>
+                    Жуков М.С.
+                </td>
+                <td>
+                    @@burstCode
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    2
+                </td>
+                <td>
+                    Любанов В.В.
+                </td>
+                <td>
+                    @@Omodest03
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
