@@ -33,9 +33,14 @@ public static class Parser
     /// <param name="path">Путь к файлу.</param>
     /// <returns>Десериализованный список правил.</returns>
     /// <exception cref="NullReferenceException"></exception>
-    public static List<RuleSet> LoadRuleSets(string path)
+    public static List<RuleSet> LoadRuleSets(string? path = null)
     {
-        string serialized = ReadFromFile(path);
+        if (path is null)
+            path = GetDefaultRuleSetsFilePath();
+
+        EnsureRuleSetsFileExists(path);
+
+        string serialized  = ReadFromFile(path);
         List<RuleSet>? ruleSets =
             JsonConvert.DeserializeObject<List<RuleSet>>(serialized);
 
@@ -48,13 +53,20 @@ public static class Parser
 
     #region Filesystem
     private static void WriteToFile(string content)
-        => File.WriteAllText(
-            Path.Combine(
-                Environment.CurrentDirectory,
-                 "rulesets.rs"),
-            content);
+        => File.WriteAllText(GetDefaultRuleSetsFilePath(), content);
 
     private static string ReadFromFile(string path)
         => File.ReadAllText(path);
+
+    private static string GetDefaultRuleSetsFilePath()
+        => Path.Combine(Environment.CurrentDirectory, "rulesets.rs");
+
+    private static void EnsureRuleSetsFileExists(string path)
+    {
+        if (!File.Exists(path))
+        {
+            File.WriteAllText(path, "[]");
+        }
+    }
     #endregion
 }

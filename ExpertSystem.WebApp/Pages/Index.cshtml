@@ -1,8 +1,50 @@
 ﻿@page
 @model IndexModel
+@using ExpertSystem.Core.Models;
 @{
     ViewData["Title"] = "ЭС";
 }
 
 <div class="text-center">
+    <h2>
+        Свод правил
+    </h2>
+</div>
+<hr>
+<div class="text-left">
+    <div class="container ruleset-card">
+        <p>
+            Правило #1
+        </p>
+        <p>
+            ЕСЛИ
+        </p>
+        <input type="text" name="cond-1-1" id="cond-1-1" value="Тип = Офисный" вш>
+        <p>
+            И
+        </p>
+        <input type="text" name="cond-1-2" id="cond-1-2" value="Игра = osu!">
+        <p>
+            ТО
+        </p>
+        <input type="text" name="cons-1" id="cons-1" value="Процессор = Intel Core i3">
+    </div>
+
+    <div class="container ruleset-card">
+        <p>
+            Правило #2
+        </p>
+        <p>
+            ЕСЛИ
+        </p>
+        <input type="text" name="cond-1-1" id="cond-1-1" value="Тип = Офисный">
+        <p>
+            И
+        </p>
+        <input type="text" name="cond-1-2" id="cond-1-2" value="Игра = osu!">
+        <p>
+            ТО
+        </p>
+        <input type="text" name="cons-1" id="cons-1" value="Процессор = Intel Core i3">
+    </div>
 </div>

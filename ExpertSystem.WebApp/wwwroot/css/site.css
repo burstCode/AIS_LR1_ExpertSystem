@@ -35,3 +35,24 @@ body {
   border-radius: 10px;
   border: 0px solid white !important;
 }
+
+.ruleset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: fit-content;
+  border: 1px solid #36454F;
+  border-radius: 16px;
+  padding: 16px 8px;
+}
+
+.ruleset-card input {
+  border: 1px solid #36454F;
+  border-radius: 10px;
+}
+
+.ruleset-card p {
+  margin: 0;
+  font-style: italic;
+  font-weight: 500;
+}
