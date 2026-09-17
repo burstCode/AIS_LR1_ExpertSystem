@@ -1,3 +1,8 @@
+:root {
+  --whisper: #E7E7E7;
+  --charcoal: #36454F;
+}
+
 html {
   font-size: 14px;
 }
@@ -8,7 +13,11 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -21,17 +30,21 @@ body {
   margin-bottom: 60px;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating>.form-control-plaintext::placeholder,
+.form-floating>.form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating>.form-control-plaintext:focus::placeholder,
+.form-floating>.form-control:focus::placeholder {
   text-align: start;
 }
 
+/* Under this comment hand-written styles, on the top - .net template  */
+
 .code-gray {
-  background: #E7E7E7;
+  background: var(--whisper);
   border-radius: 10px;
   border: 0px solid white !important;
 }
@@ -41,18 +54,30 @@ body {
   flex-direction: column;
   gap: 6px;
   max-width: fit-content;
-  border: 1px solid #36454F;
+
+  padding: 16px;
+  margin-bottom: 16px;
+
+  border: 1px solid var(--charcoal);
   border-radius: 16px;
-  padding: 16px 8px;
+
+  box-shadow: var(--charcoal) 0px 5px 15px;
 }
 
 .ruleset-card input {
-  border: 1px solid #36454F;
+  border: 1px solid var(--charcoal);
   border-radius: 10px;
+  width: 24em;
 }
 
 .ruleset-card p {
   margin: 0;
   font-style: italic;
   font-weight: 500;
+}
+
+.chosen {
+  /* Подсмотрел вот тут https://getcssscan.com/css-box-shadow-examples  */
+  box-shadow: rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px, rgba(240, 46, 170, 0.2) 15px 15px, rgba(240, 46, 170, 0.1) 20px 20px, rgba(240, 46, 170, 0.05) 25px 25px;
+  border: 1px solid rgba(240, 46, 170, 0.4);
 }

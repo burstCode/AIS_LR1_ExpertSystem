@@ -1,50 +1,69 @@
 ﻿@page
 @model IndexModel
-@using ExpertSystem.Core.Models;
 @{
     ViewData["Title"] = "ЭС";
 }
 
-<div class="text-center">
+<div class="container text-center">
     <h2>
         Свод правил
     </h2>
 </div>
 <hr>
-<div class="text-left">
-    <div class="container ruleset-card">
-        <p>
+<div class="container text-left">
+    <div class="container ruleset-card" id="rs-1">
+        <p class="text-center">
             Правило #1
         </p>
         <p>
             ЕСЛИ
         </p>
-        <input type="text" name="cond-1-1" id="cond-1-1" value="Тип = Офисный" вш>
+        <input type="text" name="cond-1-1" id="cond-1-1" value="Тип = Офисный" readonly>
         <p>
             И
         </p>
-        <input type="text" name="cond-1-2" id="cond-1-2" value="Игра = osu!">
+        <input type="text" name="cond-1-2" id="cond-1-2" value="Игра = osu!" readonly>
         <p>
             ТО
         </p>
-        <input type="text" name="cons-1" id="cons-1" value="Процессор = Intel Core i3">
+        <input type="text" name="cons-1" id="cons-1" value="Процессор = Intel Core i3" readonly>
     </div>
 
-    <div class="container ruleset-card">
-        <p>
+    <div class="container ruleset-card" id="rs-2">
+        <p class="text-center">
             Правило #2
         </p>
         <p>
             ЕСЛИ
         </p>
-        <input type="text" name="cond-1-1" id="cond-1-1" value="Тип = Офисный">
+        <input type="text" name="cond-2-1" id="cond-2-1" value="Тип = Офисный">
         <p>
             И
         </p>
-        <input type="text" name="cond-1-2" id="cond-1-2" value="Игра = osu!">
+        <input type="text" name="cond-2-2" id="cond-2-2" value="Игра = osu!">
         <p>
             ТО
         </p>
-        <input type="text" name="cons-1" id="cons-1" value="Процессор = Intel Core i3">
+        <input type="text" name="cons-2" id="cons-2" value="Процессор = Intel Core i3">
     </div>
+</div>
+
+<div class="container text-center mb-1">
+    <button class="btn btn-outline-primary" id="btn-add-rule">
+        Добавить правило
+    </button>
+    <button class="btn btn-outline-secondary" id="btn-edit-rule" disabled>
+        Редактировать правило
+    </button>
+    <button class="btn btn-outline-danger" id="btn-remove-rule" disabled>
+        Удалить правило
+    </button>
+</div>
+<div class="container text-center mb-1">
+    <button class="btn btn-outline-dark">
+        Загрузить правила
+    </button>
+    <button class="btn btn-outline-dark">
+        Сохранить правила
+    </button>
 </div>

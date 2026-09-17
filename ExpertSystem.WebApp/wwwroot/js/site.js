@@ -1,4 +1,27 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿let chosenRuleSet = null;
 
-// Write your JavaScript code.
+document.addEventListener("click", (event) => {
+    const card = event.target.closest(".ruleset-card");
+
+    // removing selection from card when clicking arount
+    if (!card) {
+        if (chosenRuleSet) {
+            chosenRuleSet.classList.remove("chosen");
+            chosenRuleSet = null;
+        }
+        return;
+    }
+
+    // removing selection from card already selected
+    if (chosenRuleSet === card) {
+        card.classList.remove("chosen");
+        chosenRuleSet = null;
+        return;
+    }
+
+    if (chosenRuleSet) {
+        chosenRuleSet.classList.remove("chosen");
+    }
+    card.classList.add("chosen");
+    chosenRuleSet = card;
+});

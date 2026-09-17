@@ -24,7 +24,7 @@
 </div>
 <div class="container">
     @{
-    string code = @"
+        string code = @"
 /// <summary>
 /// Класс определяет методы логической обработки правил,
 /// реализующие прямую цепочку рассуждений.
@@ -45,7 +45,7 @@ public static partial class Expert
         return states.Last();
     }
 }";
-}
+    }
     <pre class="prettyprint code-gray">
         <code>@Html.Raw(@Html.Encode(code))</code>
     </pre>
@@ -69,7 +69,7 @@ public static partial class Expert
                     Жуков М.С.
                 </td>
                 <td>
-                    @@burstCode
+                    <a href="https://github.com/burstCode">@@burstCode</a>
                 </td>
             </tr>
             <tr>
@@ -80,7 +80,7 @@ public static partial class Expert
                     Любанов В.В.
                 </td>
                 <td>
-                    @@Omodest03
+                    <a href="https://github.com/Omodest03">@@Omodest03</a>
                 </td>
             </tr>
         </tbody>
