@@ -1,7 +1,9 @@
+using System.Text;
 using ExpertSystem.Core;
 using ExpertSystem.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 
 namespace ExpertSystem.WebApp.Pages;
 
@@ -58,6 +60,43 @@ public class IndexModel : PageModel
 
         ruleSets.RemoveAt(index);
         Parser.SaveRuleSets(ruleSets);
+        return RedirectToPage();
+    }
+
+    /// <summary>
+    /// Скачивание текущего свода правил файлом.
+    /// </summary>
+    public IActionResult OnGetExport()
+    {
+        string json = JsonConvert.SerializeObject(Parser.LoadRuleSets(), Formatting.Indented);
+        return File(Encoding.UTF8.GetBytes(json), "application/json", "rulesets.rs");
+    }
+
+    /// <summary>
+    /// Замена свода правил содержимым загруженного файла.
+    /// </summary>
+    public async Task<IActionResult> OnPostImportAsync(IFormFile? file)
+    {
+        const long maxSize = 1024 * 1024;
+
+        if (file is null || file.Length == 0)
+            return Fail("Выберите файл со сводом правил.");
+
+        if (file.Length > maxSize)
+            return Fail("Файл слишком большой (максимум 1 МБ).");
+
+        try
+        {
+            using StreamReader reader = new(file.OpenReadStream(), Encoding.UTF8);
+            List<RuleSet> imported = Parser.ParseRuleSets(await reader.ReadToEndAsync());
+
+            Parser.SaveRuleSets(imported);
+        }
+        catch (FormatException e)
+        {
+            return Fail($"Импорт не выполнен: {e.Message}");
+        }
+
         return RedirectToPage();
     }
 

@@ -1,7 +1,7 @@
 @page
 @model AboutModel
 @{
-    ViewData[index: "Title"] = "ЭС: О программе";
+    ViewData["Title"] = "ЭС: О программе";
 }
 
 <div class="text-center">
@@ -10,13 +10,47 @@
 <hr />
 <div class="text-left">
     <p>
-        Приложение реализует экспертную системы с
+        Приложение реализует экспертную систему с
         использованием <mark>прямой цепочки рассуждений</mark>.
     </p>
     <p>
-        Предметной областью является <mark>подбор комплектующих для ПК</mark>,
-        с чем и помогает экспертная система.
+        Предметной областью является <mark>подбор комплектующих для ПК</mark>:
+        по назначению компьютера, бюджету, разрешению монитора, предпочтительной
+        платформе (Intel/AMD) и форм-фактору система подбирает процессор,
+        материнскую плату, память, видеокарту, блок питания, охлаждение,
+        накопитель и корпус.
     </p>
+
+    <h4>Как это работает</h4>
+    <ul>
+        <li>
+            <b>База правил</b> хранится отдельно от программы в текстовом файле
+            <code>rulesets.rs</code> (формат JSON). Правила имеют вид
+            <code>ЕСЛИ Объект1=Значение1 И Объект2=Значение2 ТО Объект3=Значение3</code>;
+            число условий в правиле не ограничено.
+        </li>
+        <li>
+            <b>Редактирование:</b> на странице «Свод правил» правила можно добавлять,
+            изменять и удалять; свод можно скачать (экспорт) и заменить
+            загруженным файлом (импорт) — файл проверяется перед заменой.
+        </li>
+        <li>
+            <b>Вывод:</b> на странице «Вывод» задаётся стартовая ситуация — начальное
+            состояние рабочей базы данных. Система применяет правила до тех пор,
+            пока появляются новые факты, поэтому порядок правил в своде не важен.
+            Показываются итоговая рабочая база данных (с указанием, каким правилом
+            получен каждый факт) и ход рассуждений.
+        </li>
+        <li>
+            <b>Недостающие сведения:</b> если ни одно правило больше не срабатывает,
+            система запрашивает у пользователя значения неизвестных объектов.
+            Если сведений нет, работа завершается с тем, что удалось вывести.
+        </li>
+        <li>
+            Сравнение объектов и значений не зависит от регистра и лишних пробелов.
+        </li>
+    </ul>
+
     <p>
         Ниже представлен ключевой метод системы, реализующий рассуждение в
         соответствии с загруженным сводом правил.
@@ -25,25 +59,44 @@
 <div class="container">
     @{
         string code = @"
-/// <summary>
-/// Класс определяет методы логической обработки правил,
-/// реализующие прямую цепочку рассуждений.
-/// </summary>
-public static partial class Expert
+public static InferenceResult Infer(List<RuleSet> ruleSets, List<Match> startState)
 {
-    public static Match? Think(List<RuleSet> ruleSets, List<Match> startState)
+    List<Match> facts = [];
+    foreach (Match fact in startState)
+        if (!facts.Contains(fact))
+            facts.Add(fact);
+
+    List<InferenceStep> steps = [];
+    bool[] fired = new bool[ruleSets.Count];
+
+    bool progress = true;
+    while (progress)
     {
-        List<Match> states = [.. startState];
-        foreach (RuleSet ruleSet in ruleSets)
+        progress = false;
+
+        for (int i = 0; i < ruleSets.Count; i++)
         {
-            bool isMathing = IsStateMatchesRuleSet(states, ruleSet);
-            if (isMathing)
-                states.Add(ruleSet.Consequence);
+            // каждое правило срабатывает не более одного раза
+            if (fired[i] || !IsStateMatchesRuleSet(facts, ruleSets[i]))
+                continue;
+
+            fired[i] = true;
+
+            if (facts.Contains(ruleSets[i].Consequence))
+                continue;
+
+            facts.Add(ruleSets[i].Consequence);
+            steps.Add(new InferenceStep
+            {
+                RuleIndex = i,
+                RuleSet = ruleSets[i],
+                Derived = ruleSets[i].Consequence
+            });
+            progress = true;
         }
-        if (startState.Count == states.Count)
-            return null;
-        return states.Last();
     }
+
+    return new InferenceResult { Facts = facts, Steps = steps };
 }";
     }
     <pre class="prettyprint code-gray">

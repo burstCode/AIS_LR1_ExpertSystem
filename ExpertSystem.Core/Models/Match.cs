@@ -44,7 +44,9 @@ public class Match
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Object, Value);
+        return HashCode.Combine(
+            Object.Trim().ToLowerInvariant(),
+            Value.Trim().ToLowerInvariant());
     }
 
     #endregion

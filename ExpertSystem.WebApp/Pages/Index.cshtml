@@ -62,13 +62,23 @@
     </button>
 </div>
 <div class="container text-center mb-1">
-    <button class="btn btn-outline-dark">
-        Загрузить правила
+    <button type="button" class="btn btn-outline-dark" id="btn-import-rules">
+        Импорт правил
     </button>
-    <button class="btn btn-outline-dark">
-        Сохранить правила
-    </button>
+    <a class="btn btn-outline-dark" asp-page-handler="Export">
+        Экспорт правил
+    </a>
 </div>
+<div class="container text-center mb-3">
+    <a class="btn btn-success" asp-page="/Inference">
+        Запустить вывод &rarr;
+    </a>
+</div>
+
+@* import form: the file input is opened by the button above *@
+<form method="post" asp-page-handler="Import" enctype="multipart/form-data" id="form-import" hidden>
+    <input type="file" name="file" id="import-file" accept=".rs,.json,application/json">
+</form>
 
 @* deleting selected rule form *@
 <form method="post" asp-page-handler="Delete" id="form-delete">
@@ -107,3 +117,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/rules.js" asp-append-version="true"></script>
+}

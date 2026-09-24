@@ -1,0 +1,143 @@
+@page
+@model InferenceModel
+@using ExpertSystem.Core.Models
+@{
+    ViewData["Title"] = "ЭС: Вывод";
+
+    var objects = Model.RuleSets
+        .SelectMany(r => r.Conditions.Append(r.Consequence))
+        .Select(m => m.Object).Distinct(StringComparer.OrdinalIgnoreCase);
+    var values = Model.RuleSets
+        .SelectMany(r => r.Conditions.Append(r.Consequence))
+        .Select(m => m.Value).Distinct(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="container text-center">
+    <h2>Запуск рассуждений</h2>
+</div>
+<hr>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+}
+
+<datalist id="dl-objects">
+    @foreach (string o in objects)
+    {
+        <option value="@o"></option>
+    }
+</datalist>
+<datalist id="dl-values">
+    @foreach (string v in values)
+    {
+        <option value="@v"></option>
+    }
+</datalist>
+
+<form method="post" asp-page-handler="Run">
+    <div class="container">
+        <h5>Стартовая ситуация</h5>
+        <p class="text-muted">Известные факты в виде «Объект = Значение».</p>
+
+        <div id="facts">
+            @for (int i = 0; i < Model.Facts.Count; i++)
+            {
+                <div class="input-group mb-2 fact-row">
+                    <input type="text" class="form-control fact-object" name="Facts[@i].Object"
+                           value="@Model.Facts[i].Object" placeholder="Объект" list="dl-objects">
+                    <span class="input-group-text">=</span>
+                    <input type="text" class="form-control fact-value" name="Facts[@i].Value" value="@Model.Facts[i].Value"
+                           placeholder="Значение" list="dl-values">
+                    <button type="button" class="btn btn-outline-danger btn-remove-fact"
+                            title="Убрать факт">&times;</button>
+                </div>
+            }
+        </div>
+
+        <button type="button" class="btn btn-sm btn-outline-primary mb-3" id="btn-add-fact">+ факт</button>
+        <div>
+            <button type="submit" class="btn btn-success">Запустить размышление</button>
+        </div>
+    </div>
+
+    @if (Model.Result is not null)
+    {
+        <hr>
+        <div class="container">
+            @if (Model.Result.Steps.Count > 0)
+            {
+                <div class="alert alert-success" role="alert">
+                    <strong>Вывод:</strong>
+                    <ul class="mb-0">
+                        @foreach (InferenceStep step in Model.Result.Steps)
+                        {
+                            <li>@step.Derived.Object = @step.Derived.Value</li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">
+                    Вывод сделать не удалось: ни одно правило не сработало.
+                </div>
+            }
+
+            @if (Model.MissingObjects.Count > 0)
+            {
+                <p class="text-muted">
+                    Не хватает сведений об объектах: @string.Join(", ", Model.MissingObjects).
+                    Добавьте их в стартовую ситуацию и запустите вывод снова.
+                </p>
+            }
+
+            <h5>Рабочая база данных</h5>
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Объект</th>
+                        <th>Значение</th>
+                        <th>Источник</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int f = 0; f < Model.Result.Facts.Count; f++)
+                    {
+                        Match fact = Model.Result.Facts[f];
+                        <tr>
+                            <td>@(f + 1)</td>
+                            <td>@fact.Object</td>
+                            <td>@fact.Value</td>
+                            <td>@Model.SourceOf(fact)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <h5>Ход рассуждений</h5>
+            @if (Model.Result.Steps.Count == 0)
+            {
+                <p class="text-muted">Ни одно правило не сработало.</p>
+            }
+            else
+            {
+                <ol>
+                    @foreach (InferenceStep step in Model.Result.Steps)
+                    {
+                        <li>
+                            Правило #@(step.RuleIndex + 1):
+                            ЕСЛИ @string.Join(" И ", step.RuleSet.Conditions.Select(c => $"{c.Object} = {c.Value}"))
+                            ТО <strong>@step.Derived.Object = @step.Derived.Value</strong>
+                        </li>
+                    }
+                </ol>
+            }
+        </div>
+    }
+</form>
+
+@section Scripts {
+    <script src="~/js/inference.js" asp-append-version="true"></script>
+}
