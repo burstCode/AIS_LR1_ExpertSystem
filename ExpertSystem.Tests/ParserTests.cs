@@ -61,6 +61,29 @@ public class ParserTests
     }
     #endregion
 
+    #region ParseRuleSets
+    [Fact]
+    public void ParseRuleSets_Valid()
+    {
+        string json = JsonConvert.SerializeObject(TestContentHelper.BuildTestRuleSets());
+
+        List<RuleSet> parsed = Parser.ParseRuleSets(json);
+
+        Assert.Equal(4, parsed.Count);
+    }
+
+    [Theory]
+    [InlineData("не json")]
+    [InlineData("null")]
+    [InlineData("[{\"Conditions\":[],\"Consequence\":{\"Object\":\"a\",\"Value\":\"b\"}}]")]
+    [InlineData("[{\"Conditions\":[{\"Object\":\"a\",\"Value\":\" \"}],\"Consequence\":{\"Object\":\"a\",\"Value\":\"b\"}}]")]
+    [InlineData("[null]")]
+    public void ParseRuleSets_Invalid_Throws(string json)
+    {
+        Assert.Throws<FormatException>(() => Parser.ParseRuleSets(json));
+    }
+    #endregion
+
     #region Filesystem helpers
 
     private bool RuleSetsFileExists() =>
