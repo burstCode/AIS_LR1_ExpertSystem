@@ -1,5 +1,6 @@
 ﻿@page
 @model IndexModel
+@using System.Text.Json
 @{
     ViewData["Title"] = "ЭС";
 }
@@ -10,52 +11,53 @@
     </h2>
 </div>
 <hr>
-<div class="container text-left">
-    <div class="container ruleset-card" id="rs-1">
-        <p class="text-center">
-            Правило #1
-        </p>
-        <p>
-            ЕСЛИ
-        </p>
-        <input type="text" name="cond-1-1" id="cond-1-1" value="Тип = Офисный" readonly>
-        <p>
-            И
-        </p>
-        <input type="text" name="cond-1-2" id="cond-1-2" value="Игра = osu!" readonly>
-        <p>
-            ТО
-        </p>
-        <input type="text" name="cons-1" id="cons-1" value="Процессор = Intel Core i3" readonly>
-    </div>
 
-    <div class="container ruleset-card" id="rs-2">
-        <p class="text-center">
-            Правило #2
-        </p>
-        <p>
-            ЕСЛИ
-        </p>
-        <input type="text" name="cond-2-1" id="cond-2-1" value="Тип = Офисный">
-        <p>
-            И
-        </p>
-        <input type="text" name="cond-2-2" id="cond-2-2" value="Игра = osu!">
-        <p>
-            ТО
-        </p>
-        <input type="text" name="cons-2" id="cons-2" value="Процессор = Intel Core i3">
-    </div>
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+}
+
+<div class="container text-left">
+    @if (Model.RuleSets.Count == 0)
+    {
+        <p class="text-center text-muted">Правил пока нет. Нажмите «Добавить правило».</p>
+    }
+
+    @for (int i = 0; i < Model.RuleSets.Count; i++)
+    {
+        var rs = Model.RuleSets[i];
+        string data = JsonSerializer.Serialize(new
+        {
+            index = i,
+            conditions = rs.Conditions.Select(c => new { obj = c.Object, val = c.Value }),
+            consequence = new { obj = rs.Consequence.Object, val = rs.Consequence.Value }
+        });
+
+        <div class="container ruleset-card" id="rs-@(i + 1)" data-index="@i" data-rule="@data">
+            <p class="text-center">
+                Правило #@(i + 1)
+            </p>
+            @for (int j = 0; j < rs.Conditions.Count; j++)
+            {
+                <p>@(j == 0 ? "ЕСЛИ" : "И")</p>
+                <input type="text" value="@rs.Conditions[j].Object = @rs.Conditions[j].Value" readonly>
+            }
+            <p>
+                ТО
+            </p>
+            <input type="text" value="@rs.Consequence.Object = @rs.Consequence.Value" readonly>
+        </div>
+    }
 </div>
 
 <div class="container text-center mb-1">
-    <button class="btn btn-outline-primary" id="btn-add-rule">
+    <button type="button" class="btn btn-outline-primary" id="btn-add-rule">
         Добавить правило
     </button>
-    <button class="btn btn-outline-secondary" id="btn-edit-rule" disabled>
+    <button type="button" class="btn btn-outline-secondary" id="btn-edit-rule" disabled>
         Редактировать правило
     </button>
-    <button class="btn btn-outline-danger" id="btn-remove-rule" disabled>
+    <button type="button" class="btn btn-outline-danger" id="btn-remove-rule" disabled>
         Удалить правило
     </button>
 </div>
@@ -66,4 +68,42 @@
     <button class="btn btn-outline-dark">
         Сохранить правила
     </button>
+</div>
+
+@* deleting selected rule form *@
+<form method="post" asp-page-handler="Delete" id="form-delete">
+    <input type="hidden" name="index" id="delete-index">
+</form>
+
+@* add/edit modal *@
+<div class="modal fade" id="rule-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" asp-page-handler="Save" class="modal-content" id="form-save">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rule-modal-title">Правило</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="Input.Index" id="input-index">
+
+                <div id="conditions"></div>
+                <button type="button" class="btn btn-sm btn-outline-primary mb-3" id="btn-add-condition">
+                    + условие (И)
+                </button>
+
+                <p class="mb-1 fst-italic fw-medium">ТО</p>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="Input.Consequence.Object" id="cons-object"
+                           placeholder="Объект" required>
+                    <span class="input-group-text">=</span>
+                    <input type="text" class="form-control" name="Input.Consequence.Value" id="cons-value"
+                           placeholder="Значение" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
 </div>

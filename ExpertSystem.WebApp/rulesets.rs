@@ -1,1 +1,1 @@
-[]
+[{"Conditions":[{"Object":"процессор","Value":"intel core i3"}],"Consequence":{"Object":"видеокарта","Value":"nvidia geforce gt1030"}}]
