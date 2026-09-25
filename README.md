@@ -23,7 +23,7 @@
 
 ```bash
 cd ExpertSystem.WebApp
-dotnet run --launch-profile http
+dotnet run --project ExpertSystem.WebApp
 ```
 
 Приложение откроется в [http://localhost:5147](http://localhost:5147).
