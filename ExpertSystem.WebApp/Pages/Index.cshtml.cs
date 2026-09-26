@@ -9,7 +9,17 @@ namespace ExpertSystem.WebApp.Pages;
 
 public class IndexModel : PageModel
 {
+    public static readonly int[] PageSizes = [5, 10, 20];
+
     public List<RuleSet> RuleSets { get; private set; } = [];
+
+    [BindProperty(SupportsGet = true)]
+    public int PageNumber { get; set; } = 1;
+
+    [BindProperty(SupportsGet = true)]
+    public int PageSize { get; set; } = PageSizes[0];
+
+    public int PageCount => Math.Max(1, (int)Math.Ceiling(RuleSets.Count / (double)PageSize));
 
     /// <summary>
     /// Привязка данных к модальному окну добавления/редактирования.
@@ -23,6 +33,11 @@ public class IndexModel : PageModel
     public void OnGet()
     {
         RuleSets = Parser.LoadRuleSets();
+
+        if (!PageSizes.Contains(PageSize))
+            PageSize = PageSizes[0];
+
+        PageNumber = Math.Clamp(PageNumber, 1, PageCount);
     }
 
     /// <summary>
@@ -48,7 +63,7 @@ public class IndexModel : PageModel
             ruleSets.Add(ruleSet);
 
         Parser.SaveRuleSets(ruleSets);
-        return RedirectToPage();
+        return RedirectToCurrentPage();
     }
 
     public IActionResult OnPostDelete(int index)
@@ -60,7 +75,7 @@ public class IndexModel : PageModel
 
         ruleSets.RemoveAt(index);
         Parser.SaveRuleSets(ruleSets);
-        return RedirectToPage();
+        return RedirectToCurrentPage();
     }
 
     /// <summary>
@@ -103,8 +118,11 @@ public class IndexModel : PageModel
     private IActionResult Fail(string message)
     {
         ErrorMessage = message;
-        return RedirectToPage();
+        return RedirectToCurrentPage();
     }
+
+    private IActionResult RedirectToCurrentPage()
+        => RedirectToPage(new { PageNumber, PageSize });
 }
 
 public class MatchInput

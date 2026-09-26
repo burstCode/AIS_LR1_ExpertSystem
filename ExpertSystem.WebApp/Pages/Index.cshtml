@@ -23,7 +23,7 @@
         <p class="text-center text-muted">Правил пока нет. Нажмите «Добавить правило».</p>
     }
 
-    @for (int i = 0; i < Model.RuleSets.Count; i++)
+    @for (int i = (Model.PageNumber - 1) * Model.PageSize; i < Math.Min(Model.PageNumber * Model.PageSize, Model.RuleSets.Count); i++)
     {
         var rs = Model.RuleSets[i];
         string data = JsonSerializer.Serialize(new
@@ -49,6 +49,21 @@
         </div>
     }
 </div>
+
+<form method="get" class="container d-flex justify-content-center align-items-center gap-2 mb-3">
+    <a class="btn btn-sm btn-outline-secondary @(Model.PageNumber <= 1 ? "disabled" : "")"
+       asp-page="/Index" asp-route-PageNumber="@(Model.PageNumber - 1)" asp-route-PageSize="@Model.PageSize">&laquo;</a>
+    <span>Страница @Model.PageNumber из @Model.PageCount</span>
+    <a class="btn btn-sm btn-outline-secondary @(Model.PageNumber >= Model.PageCount ? "disabled" : "")"
+       asp-page="/Index" asp-route-PageNumber="@(Model.PageNumber + 1)" asp-route-PageSize="@Model.PageSize">&raquo;</a>
+    <label class="ms-3" for="page-size">На странице:</label>
+    <select class="form-select form-select-sm w-auto" name="PageSize" id="page-size" onchange="this.form.submit()">
+        @foreach (int size in IndexModel.PageSizes)
+        {
+            <option value="@size" selected="@(size == Model.PageSize)">@size</option>
+        }
+    </select>
+</form>
 
 <div class="container text-center mb-1">
     <button type="button" class="btn btn-outline-primary" id="btn-add-rule">
@@ -81,14 +96,14 @@
 </form>
 
 @* deleting selected rule form *@
-<form method="post" asp-page-handler="Delete" id="form-delete">
+<form method="post" asp-page-handler="Delete" asp-route-PageNumber="@Model.PageNumber" asp-route-PageSize="@Model.PageSize" id="form-delete">
     <input type="hidden" name="index" id="delete-index">
 </form>
 
 @* add/edit modal *@
 <div class="modal fade" id="rule-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <form method="post" asp-page-handler="Save" class="modal-content" id="form-save">
+        <form method="post" asp-page-handler="Save" asp-route-PageNumber="@Model.PageNumber" asp-route-PageSize="@Model.PageSize" class="modal-content" id="form-save">
             <div class="modal-header">
                 <h5 class="modal-title" id="rule-modal-title">Правило</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
