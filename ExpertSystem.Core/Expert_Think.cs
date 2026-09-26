@@ -69,39 +69,31 @@ public static partial class Expert
     }
 
     /// <summary>
-    /// Определяет объекты, о которых стоит спросить пользователя,
-    /// когда ни одно правило больше не срабатывает.
-    /// <para>
-    /// Это объекты из условий несработавших правил, значение которых
-    /// ещё неизвестно. Объекты, которые сами выводятся какими-либо
-    /// правилами, спрашиваются, только если других вопросов нет.
-    /// </para>
+    /// Определяет объекты из условий правил, о которых стоит спросить
+    /// пользователя: те, которые он не указал в стартовом состоянии,
+    /// и те, чьи стартовые факты не участвовали ни в одном сработавшем правиле.
     /// </summary>
     /// <param name="ruleSets">Набор правил.</param>
-    /// <param name="facts">Текущее состояние рабочей базы данных.</param>
+    /// <param name="steps">Шаги вывода.</param>
+    /// <param name="startState">Стартовое состояние системы.</param>
     /// <returns>Названия объектов без повторов.</returns>
-    public static List<string> FindMissingObjects(List<RuleSet> ruleSets, List<Match> facts)
+    public static List<string> FindMissingObjects(List<RuleSet> ruleSets, List<InferenceStep> steps, List<Match> startState)
     {
         static string Key(string s) => s.Trim().ToLowerInvariant();
 
-        HashSet<string> known = [.. facts.Select(f => Key(f.Object))];
-        HashSet<string> derivable = [.. ruleSets.Select(r => Key(r.Consequence.Object))];
+        HashSet<string> known = [.. startState.Select(f => Key(f.Object))];
+
+        HashSet<Match> used = [.. steps.SelectMany(s => s.RuleSet.Conditions)];
+        HashSet<string> unprocessed = [.. startState.Where(f => !used.Contains(f)).Select(f => Key(f.Object))];
 
         Dictionary<string, string> missing = [];
-        foreach (RuleSet rs in ruleSets)
+        foreach (Match cond in ruleSets.SelectMany(r => r.Conditions))
         {
-            if (IsStateMatchesRuleSet(facts, rs))
-                continue;
-
-            foreach (Match cond in rs.Conditions)
-            {
-                string key = Key(cond.Object);
-                if (!known.Contains(key))
-                    missing.TryAdd(key, cond.Object.Trim());
-            }
+            string key = Key(cond.Object);
+            if (!known.Contains(key) || unprocessed.Contains(key))
+                missing.TryAdd(key, cond.Object.Trim());
         }
 
-        List<string> primary = [.. missing.Where(m => !derivable.Contains(m.Key)).Select(m => m.Value)];
-        return primary.Count > 0 ? primary : [.. missing.Values];
+        return [.. missing.Values];
     }
 }

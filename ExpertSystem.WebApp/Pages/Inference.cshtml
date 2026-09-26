@@ -87,8 +87,7 @@
             @if (Model.MissingObjects.Count > 0)
             {
                 <p class="text-muted">
-                    Не хватает сведений об объектах: @string.Join(", ", Model.MissingObjects).
-                    Добавьте их в стартовую ситуацию и запустите вывод снова.
+                    Вы можете дополнить стартовую ситуацию следующими фактами: @string.Join(", ", Model.MissingObjects).
                 </p>
             }
 

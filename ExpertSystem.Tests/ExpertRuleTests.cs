@@ -297,24 +297,44 @@ public class ExpertRulesTest
     }
 
     [Fact]
-    public void FindMissingObjects_AsksAboutLeafObjectsOnly()
+    public void FindMissingObjects_ReturnsConditionObjectsAbsentFromStartState()
     {
+        List<RuleSet> ruleSets = TestContentHelper.BuildTestRuleSets();
         List<Match> startState = [new() { Object = "Тип", Value = "Офисный" }];
+        InferenceResult result = Expert.Infer(ruleSets, startState);
 
-        List<string> missing = Expert.FindMissingObjects(TestContentHelper.BuildTestRuleSets(), startState);
+        List<string> missing = Expert.FindMissingObjects(ruleSets, result.Steps, startState);
 
-        // "Процессор" и "Видеокарта" выводятся правилами, спрашивать про них не нужно
-        Assert.Equal(["Игра"], missing);
+        // "Игра" не указана, "Тип" указан, но ни одно правило по нему не сработало
+        Assert.Contains("Игра", missing);
+        Assert.Contains("Тип", missing);
+        Assert.Contains("Процессор", missing);
+        Assert.Equal(missing.Count, missing.Select(m => m.ToLower()).Distinct().Count());
     }
 
     [Fact]
-    public void FindMissingObjects_AllKnown_ReturnsEmpty()
+    public void FindMissingObjects_AllFactsProcessed_ReturnsOnlyUnknownObjects()
     {
-        InferenceResult result = Expert.Infer(
-            TestContentHelper.BuildTestRuleSets(),
-            TestContentHelper.BuildStartState());
+        List<RuleSet> ruleSets = TestContentHelper.BuildTestRuleSets();
+        List<Match> startState = TestContentHelper.BuildStartState();
+        InferenceResult result = Expert.Infer(ruleSets, startState);
 
-        Assert.Empty(Expert.FindMissingObjects(TestContentHelper.BuildTestRuleSets(), result.Facts));
+        List<string> missing = Expert.FindMissingObjects(ruleSets, result.Steps, startState);
+
+        Assert.DoesNotContain(missing, m => m is "Тип" or "Игра");
+    }
+
+    [Fact]
+    public void FindMissingObjects_UnprocessedStartFact_KeepsObjectInList()
+    {
+        List<RuleSet> ruleSets = TestContentHelper.BuildTestRuleSets();
+        List<Match> startState = [new() { Object = "Тип", Value = "Офисный" }, new() { Object = " игра ", Value = "minecraft" }];
+        InferenceResult result = Expert.Infer(ruleSets, startState);
+
+        List<string> missing = Expert.FindMissingObjects(ruleSets, result.Steps, startState);
+
+        Assert.Contains("Игра", missing);
+        Assert.Contains("Тип", missing);
     }
     #endregion
 }

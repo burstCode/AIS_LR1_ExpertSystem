@@ -45,8 +45,9 @@ public class InferenceModel : PageModel
             return;
         }
 
-        Result = Expert.Infer(RuleSets, [.. facts.Select(f => new Match { Object = f.Object, Value = f.Value })]);
-        MissingObjects = Expert.FindMissingObjects(RuleSets, Result.Facts);
+        List<Match> startState = [.. facts.Select(f => new Match { Object = f.Object, Value = f.Value })];
+        Result = Expert.Infer(RuleSets, startState);
+        MissingObjects = Expert.FindMissingObjects(RuleSets, Result.Steps, startState);
     }
 
     /// <summary>
